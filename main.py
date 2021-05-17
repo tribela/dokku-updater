@@ -28,7 +28,7 @@ def update_app(app):
     except docker.errors.ImageNotFound:
         image = None
 
-    new_image = api.images.get_registry_data(image_name).pull()
+    new_image = api.images.pull(image_name)
 
     if image is None or new_image.id != image.id:
         subprocess.run(['dokku', 'ps:rebuild', app['name']])
