@@ -2,8 +2,8 @@ import functools
 import subprocess
 import time
 
-import yaml
 import docker
+import yaml
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -19,19 +19,23 @@ def update_all(apps):
     for app in apps:
         update_app(app)
 
+    api.images.prune()
+
 
 def update_app(app):
     image_name = app['image']
-    print(f'Updating {image_name}')
+    app_name = app['name']
     try:
         image = api.images.get(image_name)
     except docker.errors.ImageNotFound:
         image = None
 
-    new_image = api.images.pull(image_name)
+    new_image = api.images.get_registry_data(image_name).pull()
 
     if image is None or new_image.id != image.id:
-        subprocess.run(['dokku', 'ps:rebuild', app['name']])
+        new_image.tag(image_name)
+        print(f'Updating {app_name}')
+        subprocess.run(['dokku', 'ps:rebuild', app_name])
 
 
 def main():
