@@ -35,7 +35,7 @@ def update_app(app):
     if image is None or new_image.id != image.id:
         new_image.tag(image_name)
         print(f'Updating {app_name}')
-        subprocess.run(['dokku', 'ps:rebuild', app_name])
+        subprocess.run(['dokku', 'ps:rebuild', app_name], stdout=subprocess.DEVNULL)
 
 
 def main():
