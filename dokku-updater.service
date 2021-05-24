@@ -1,0 +1,12 @@
+[Unit]
+Description=Watch docker hub to update dokku services
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+User=dokku
+ExecStart=/home/dokku/dokku-updater/start.sh
+
+[Install]
+WantedBy=docker.service
