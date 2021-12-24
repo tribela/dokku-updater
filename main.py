@@ -1,4 +1,6 @@
 import functools
+import os
+import requests
 import subprocess
 import time
 
@@ -8,6 +10,8 @@ import yaml
 from apscheduler.schedulers.background import BackgroundScheduler
 
 api = docker.from_env()
+
+DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
 
 
 def apscheduler_wait(scheduler):
@@ -35,12 +39,35 @@ def update_app(app):
     if image is None or new_image.id != image.id:
         new_image.tag(image_name)
         print(f'Updating {app_name}')
-        subprocess.run(['dokku', 'ps:rebuild', app_name], stdout=subprocess.DEVNULL)
+        result = subprocess.run(['dokku', 'ps:rebuild', app_name], stdout=subprocess.DEVNULL)
+        if result.returncode != 0:
+            if DISCORD_WEBHOOK_URL:
+                requests.post(
+                    DISCORD_WEBHOOK_URL,
+                    data={
+                        'username': 'Updater',
+                        'content': f'Deploying {app_name} is failed!',
+                    }
+                )
+        else:
+            if DISCORD_WEBHOOK_URL:
+                requests.post(
+                    DISCORD_WEBHOOK_URL,
+                    data={
+                        'username': 'Updater',
+                        'content': f'{app_name} is deployed!',
+                    }
+                )
 
 
 def main():
     with open('config.yml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
+
+    if DISCORD_WEBHOOK_URL:
+        print("Discord webhook is enabled")
+    else:
+        print("Discord webhook is not enabled")
 
     scheduler = BackgroundScheduler()
     scheduler.start()
