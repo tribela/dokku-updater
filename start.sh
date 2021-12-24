@@ -2,7 +2,7 @@
 
 cd $(dirname $(readlink -e $0))
 
-export PYTHON_UNBUFFERED=1
+export PYTHONUNBUFFERED=1
 export PYTHONFAULTHANDLER=1
 export PYTHONHASHSEED=1
 
