@@ -12,6 +12,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 api = docker.from_env()
 
 DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
+MASTODON_ACCESS_TOKEN = os.getenv('MASTODON_ACCESS_TOKEN')
+MASTODON_HOST = os.getenv('MASTODON_HOST')
 
 
 def apscheduler_wait(scheduler):
@@ -56,6 +58,17 @@ def update_app(app):
                     data={
                         'username': 'Updater',
                         'content': f'{app_name} is deployed!',
+                    }
+                )
+            if MASTODON_ACCESS_TOKEN and MASTODON_HOST:
+                requests.post(
+                    f'https://{MASTODON_HOST}/api/v1/statuses',
+                    headers={
+                        'Authorization': f'Bearer {MASTODON_ACCESS_TOKEN}',
+                    },
+                    json={
+                        'status': f'{app_name} 신제품 게시!',
+                        'language': 'ko',
                     }
                 )
 
