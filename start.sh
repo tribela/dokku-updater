@@ -2,10 +2,13 @@
 
 cd $(dirname $(readlink -e $0))
 
+source .venv/bin/activate
+
 export PYTHONUNBUFFERED=1
 export PYTHONFAULTHANDLER=1
 export PYTHONHASHSEED=1
 
-python="$(poetry env info --path)/bin/python"
+set -a
+source .env
 
-exec $python -u main.py
+exec python -u main.py
