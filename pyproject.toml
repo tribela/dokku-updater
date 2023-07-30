@@ -6,8 +6,8 @@ authors = ["Jeong Arm"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-docker = "^5.0.0"
-PyYAML = "^5.4.1"
+docker = "^6.0.0"
+PyYAML = "^6.0.0"
 APScheduler = "^3.7.0"
 
 [tool.poetry.dev-dependencies]
